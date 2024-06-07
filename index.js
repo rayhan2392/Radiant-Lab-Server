@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port =process.env.PORT || 5000;
 
 //middle ware
@@ -44,6 +44,14 @@ app.get('/allTests',async(req,res)=>{
     res.send(result)
 })
 
+//get a single test
+app.get('/allTests/:id',async(req,res)=>{
+  const id = req.params.id
+  const query = {_id:new ObjectId(id)}
+  const result = await allTestCollection.findOne(query);
+  res.send(result)
+})
+
   //all user related api
 
   // post all the user to the database
@@ -52,6 +60,25 @@ app.get('/allTests',async(req,res)=>{
     const result = await userCollection.insertOne(userInfo);
     res.send(result);
     console.log(result);
+  })
+
+  // get all user data
+  app.get('/users',async(req,res)=>{
+    const result = await userCollection.find().toArray()
+    res.send(result);
+  })
+
+  //get a single user data
+  app.get('/users/:id',async(req,res)=>{
+    // const email = req.query.email
+    // const email = req.body.email;
+    // const id = req.params.id;
+    // console.log(id)
+    // console.log(email);
+    // const query = {email:email}
+    // console.log(email)
+    // const result = await userCollection.findOne(query);
+    // res.send(result);
   })
 
     // Send a ping to confirm a successful connection
