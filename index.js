@@ -33,6 +33,7 @@ async function run() {
 
     const allTestCollection = client.db('radinatLab').collection('allTests')
     const userCollection = client.db('radinatLab').collection('users')
+    const bookingCollection = client.db('radinatLab').collection('Bookings')
     
 
 
@@ -79,6 +80,13 @@ app.get('/allTests/:id',async(req,res)=>{
     // console.log(email)
     // const result = await userCollection.findOne(query);
     // res.send(result);
+  })
+
+  // test booking related api 
+  app.post('/bookings',async(req,res)=>{
+    const bookingInfo = req.body;
+    const result = await bookingCollection.insertOne(bookingInfo);
+    res.send(result)
   })
 
     // Send a ping to confirm a successful connection
