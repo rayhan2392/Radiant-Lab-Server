@@ -60,6 +60,14 @@ app.post('/allTests',async(req,res)=>{
   res.send(result);
 })
 
+// delete a single test by admin
+app.delete('/allTests/:id',async(req,res)=>{
+  const id = req.params.id;
+  const query = {_id:new ObjectId(id)}
+  const result = await allTestCollection.deleteOne(query);
+  res.send(result)
+})
+
 // -------test related api ends ----------
 
   //---------all user related api starts-----
