@@ -53,7 +53,7 @@ app.get('/allTests/:id',async(req,res)=>{
   res.send(result)
 })
 
-  //all user related api
+  //---------all user related api starts-----
 
   // post all the user to the database
   app.post('/users',async(req,res)=>{
@@ -94,6 +94,21 @@ app.get('/allTests/:id',async(req,res)=>{
     const result = await userCollection.updateOne(filter,updatedDoc)
     res.send(result);
   })
+
+  //make a regular user to admin
+  app.patch('/users/admin/:id',async(req,res)=>{
+    const id = req.params.id;
+    const filter ={_id: new ObjectId(id)}
+    const updatedDoc = {
+      $set:{
+        role:'admin'
+      }
+    }
+    const result =await userCollection.updateOne(filter,updatedDoc)
+    res.send(result);
+  })
+
+  //--------All user related api ends--------
 
   // test booking related api 
   app.post('/bookings',async(req,res)=>{
