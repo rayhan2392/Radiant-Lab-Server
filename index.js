@@ -68,6 +68,25 @@ app.delete('/allTests/:id',async(req,res)=>{
   res.send(result)
 })
 
+//update a single test
+app.put('/allTests/:id',async(req,res)=>{
+  const id = req.params.id;
+  const updatedTest = req.body;
+  const filter ={_id:new ObjectId(id)}
+  const updatedDoc = {
+    $set:{
+      test_name:updatedTest.test_name,
+      image:updatedTest.image,
+      details:updatedTest.details,
+      date:updatedTest.date,
+      price:updatedTest.price,
+      slots:updatedTest.slots
+    }
+  }
+  const result = await allTestCollection.updateOne(filter,updatedDoc)
+  res.send(result)
+})
+
 // -------test related api ends ----------
 
   //---------all user related api starts-----
