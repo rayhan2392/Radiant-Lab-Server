@@ -37,7 +37,7 @@ async function run() {
     
 
 
-// All test related api
+//    --------- All test related api starts ---------
 
 //get all the test
 app.get('/allTests',async(req,res)=>{
@@ -52,6 +52,15 @@ app.get('/allTests/:id',async(req,res)=>{
   const result = await allTestCollection.findOne(query);
   res.send(result)
 })
+
+// post a single test by admin
+app.post('/allTests',async(req,res)=>{
+  const newTest = req.body;
+  const result = await allTestCollection.insertOne(newTest);
+  res.send(result);
+})
+
+// -------test related api ends ----------
 
   //---------all user related api starts-----
 
@@ -110,12 +119,15 @@ app.get('/allTests/:id',async(req,res)=>{
 
   //--------All user related api ends--------
 
-  // test booking related api 
+  // ---------- test booking related api starts ---------- 
   app.post('/bookings',async(req,res)=>{
     const bookingInfo = req.body;
     const result = await bookingCollection.insertOne(bookingInfo);
     res.send(result)
   })
+
+
+  // ------ 
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
