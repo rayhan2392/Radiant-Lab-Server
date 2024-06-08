@@ -82,6 +82,19 @@ app.get('/allTests/:id',async(req,res)=>{
     // res.send(result);
   })
 
+  //block a single user
+  app.patch('/users/:id',async(req,res)=>{
+    const id = req.params;
+    const filter = {_id: new ObjectId(id)}
+    const updatedDoc = {
+      $set:{
+        status:'blocked'
+      }
+    }
+    const result = await userCollection.updateOne(filter,updatedDoc)
+    res.send(result);
+  })
+
   // test booking related api 
   app.post('/bookings',async(req,res)=>{
     const bookingInfo = req.body;
