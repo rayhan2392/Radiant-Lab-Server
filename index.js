@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config()
 const app = express();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+console.log(process.env.STRIPE_SECRET_KEY)
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port =process.env.PORT || 5000;
 
@@ -14,8 +17,8 @@ app.get('/',(req,res)=>{
 
 
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.s6hdjpg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const uri = `mongodb+srv://radiantLab:WDrNFblnboZK0OEd@cluster0.s6hdjpg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.s6hdjpg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
   // console.log(process.env.DB_USER)
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -34,6 +37,7 @@ async function run() {
     const allTestCollection = client.db('radinatLab').collection('allTests')
     const userCollection = client.db('radinatLab').collection('users')
     const bookingCollection = client.db('radinatLab').collection('Bookings')
+    const bannerCollection = client.db('radinatLab').collection('Banners')
     
 
 
@@ -154,7 +158,78 @@ app.put('/allTests/:id',async(req,res)=>{
   })
 
 
-  // ------ 
+  // ------ test booking related api ends----------
+
+  // -------------all banner related api starts---------
+
+  // post a single banner data
+  app.post('/banners',async(req,res)=>{
+    const banner = req.body;
+    const result = await bannerCollection.insertOne(banner);
+    res.send(result)
+  })
+
+//load all the banner data
+app.get('/banners',async(req,res)=>{
+  const result = await bannerCollection.find().toArray();
+  res.send(result)
+})
+// update current banner status
+app.patch('/banners/:id',async(req,res)=>{
+  //set all the banner status to false
+   await bannerCollection.updateMany({},{$set:{isActive:false}})
+   //set selected banner status to true
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id)}
+  const updatedDoc={
+    $set:{
+      isActive:true
+    }
+  }
+  const result = await bannerCollection.updateOne(filter,updatedDoc);
+  res.send(result);
+
+
+  
+ 
+
+})
+
+
+  //get a single banner
+  app.get('/banners/:id',async(req,res)=>{
+    const id = req.params.id;
+    console.log(id)
+    const query = {_id: new ObjectId(id)}
+    const result = await bannerCollection.findOne(query);
+    res.send(result)
+  })
+
+
+//delete a single banner
+app.delete('/banners/:id',async(req,res)=>{
+  const id = req.params.id;
+  console.log(id)
+  const query = {_id: new ObjectId(id)}
+  const result = await bannerCollection.deleteOne(query);
+  res.send(result)
+})
+  // -------------all banner related api ends---------
+
+  //payment intent
+  app.post('/create-payment-intent',async(req,res)=>{
+    const {price}=req.body;
+    const amount = parseInt(price*100);
+    const paymentIntent =await stripe.paymentIntents.create({
+      amount:amount,
+      currency:'usd',
+      payment_method_types:['card']
+    });
+
+    res.send({
+      clientSecret:paymentIntent.client_secret
+    })
+  })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
