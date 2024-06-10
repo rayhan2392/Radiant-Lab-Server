@@ -148,15 +148,64 @@ app.put('/allTests/:id',async(req,res)=>{
     res.send(result);
   })
 
+  //check an use whether he is admin or not
+  app.get('/users/admin/:email',async(req,res)=>{
+    const email = req.params.email;
+    const query = {email:email}
+    const user = await userCollection.findOne(query)
+    let admin = false;
+    if(user){
+      admin = user?.role === 'admin'
+    }
+    res.send({admin})
+  })
+
   //--------All user related api ends--------
 
   // ---------- test booking related api starts ---------- 
+  //post a single booking data
   app.post('/bookings',async(req,res)=>{
     const bookingInfo = req.body;
     const result = await bookingCollection.insertOne(bookingInfo);
     res.send(result)
   })
+// get all the booking data
+  app.get('/bookings',async(req,res)=>{
+    const result = await bookingCollection.find().toArray();
+    res.send(result)
+  })
 
+  //get a single booking data
+  app.get('/bookings/:id',async(req,res)=>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)}
+    const result = await bookingCollection.findOne(query);
+    res.send(result);
+  })
+
+  // update booking status
+  app.patch('/bookings/:id',async(req,res)=>{
+    const id = req.params.id;
+    const reportInfo = req.body;
+    console.log(reportInfo)
+    const filter ={_id: new ObjectId(id)}
+    const updatedDoc ={
+      $set:{
+        status:reportInfo.status,
+        report:reportInfo.report
+      }
+    }
+    const result = await bookingCollection.updateOne(filter,updatedDoc)
+    res.send(result)
+  })
+
+  //delete a booking data
+  app.delete('/bookings/:id',async(req,res)=>{
+    const id = req.params.id;
+    const query = {_id:new ObjectId(id)}
+    const result = await bookingCollection.deleteOne(query);
+    res.send(result)
+  })
 
   // ------ test booking related api ends----------
 
